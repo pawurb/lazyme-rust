@@ -22,15 +22,19 @@ fn main() -> io::Result<()> {
     let file = fs::File::open(history_file_path)?;
     let reader = io::BufReader::new(file);
 
-    let mut count = HashMap::new();
-    for line in reader.lines() {
-        let line = line?;
-        let item = line.split(';').last().unwrap_or_default().to_string();
-        let trimmed = trim(&item);
-        *count.entry(trimmed).or_insert(0) += 1;
-    }
+    let counts = reader
+        .lines()
+        .fold(HashMap::new(), |mut acc, line| match line {
+            Ok(line) => {
+                let item = line.split(';').last().unwrap_or_default().to_string();
+                let trimmed = trim(&item);
+                *acc.entry(trimmed).or_insert(0) += 1;
+                acc
+            }
+            Err(_) => acc,
+        });
 
-    let mut rows: Vec<_> = count
+    let mut rows: Vec<_> = counts
         .into_iter()
         .filter(|&(_, v)| v > COUNT_LIMIT)
         .collect();
