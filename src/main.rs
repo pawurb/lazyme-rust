@@ -44,11 +44,11 @@ fn main() -> io::Result<()> {
 
 fn render_table(commands: Vec<(String, usize)>) {
     let mut table = Table::new();
-    table.add_row(row!["Command", "Count"]);
 
     for (command, count) in commands {
         table.add_row(row![command, count]);
     }
+    table.add_row(row!["Command", "Count"]);
     table.printstd();
 }
 
