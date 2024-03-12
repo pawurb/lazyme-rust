@@ -12,11 +12,7 @@ const COUNT_LIMIT: usize = 10;
 fn main() -> io::Result<()> {
     let args: Vec<String> = env::args().collect();
 
-    let custom_file_name = if args.len() > 1 {
-        Some(args[1].clone())
-    } else {
-        None
-    };
+    let custom_file_name = args.get(1);
 
     let history_file_path = get_history_file_path(custom_file_name)?;
     let file = fs::File::open(history_file_path)?;
@@ -65,7 +61,7 @@ fn trim(item: &str) -> String {
     }
 }
 
-fn get_history_file_path(file_name: Option<String>) -> io::Result<String> {
+fn get_history_file_path(file_name: Option<&String>) -> io::Result<String> {
     match file_name {
         Some(name) => {
             let file_path = PathBuf::from(&name);
@@ -79,7 +75,7 @@ fn get_history_file_path(file_name: Option<String>) -> io::Result<String> {
             }
         }
         None => {
-            let home_dir = env::var("HOME").expect("HOME environment variable not set");
+            let home_dir = env::var("HOME").expect("HOME environment variable not set.");
             let zsh_history = PathBuf::from(&home_dir).join(".zsh_history");
             let bash_history = PathBuf::from(&home_dir).join(".bash_history");
 
@@ -90,7 +86,7 @@ fn get_history_file_path(file_name: Option<String>) -> io::Result<String> {
             } else {
                 Err(io::Error::new(
                     io::ErrorKind::NotFound,
-                    "Missing both zsh and bash history files",
+                    "Missing both zsh and bash history files.",
                 ))
             }
         }
